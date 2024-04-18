@@ -1,0 +1,50 @@
+services:
+  api-jenius-ts:
+    build:
+      context: .
+    image: api-jenius-ts
+    container_name: api-jenius-ts-container
+    depends_on:
+      - mongo
+      - cache
+    ports:
+      - 3000:3000
+    environment:
+      - PORT=3000
+      - MONGODB_URL=mongodb://mongo:27017
+      - MONGODB_NAME=db_nurrohim_betest
+      - MONGODB_USERNAME=
+      - MONGODB_PASSWORD=
+      - JWT_TOKEN=cadadce2eb9378286f87ef1cd245e4fa98b1c6ec307390834399a60f32a84d6a
+      - REDIS_HOST=cache
+      - REDIS_PASSWORD=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+      - REDIS_PORT=6379
+    volumes:
+      - ./:/code
+    links:
+      - mongo
+      - cache
+    command: npm run start:dev
+  
+  mongo:
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb:/data/db
+      - mongodb_config:/data/configdb
+
+  cache:
+    image: redis:latest
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes: 
+      - cache:/data
+      
+volumes:
+  mongodb:
+  mongodb_config:
+  cache:
+    driver: local
